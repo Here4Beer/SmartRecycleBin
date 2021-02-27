@@ -4,6 +4,8 @@ from torchvision import transforms
 from PIL import Image
 import cv2
 
+PREDICTION_THRESHOLD = 0.9
+
 
 class SmartBinPredictor:
     def __init__(self, model_path):
@@ -23,6 +25,11 @@ class SmartBinPredictor:
         inputs = self.data_transforms(image)
         inputs = inputs.to(self.device)
 
-        class_index = np.argmax(self.model(inputs[None, ...]).cpu().detach().numpy())
+        results = 1/(1 + np.exp(-self.model(inputs[None, ...]).cpu().detach().numpy()))
+        max_result = np.max(results)
+        if max_result <= PREDICTION_THRESHOLD:
+            return None
+
+        class_index = np.argmax(results)
         return self.class_names[class_index]
 
