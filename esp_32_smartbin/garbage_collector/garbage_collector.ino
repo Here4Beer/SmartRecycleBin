@@ -2,8 +2,8 @@
 
 //Testing example for esp32
 
-const char* wifi_name = "SSID"; // Your Wifi network name here
-const char* wifi_pass = "PASS";    // Your Wifi network password here
+const char* wifi_name = "A1_A1C2CA"; // Your Wifi network name here
+const char* wifi_pass = "72041880";    // Your Wifi network password here
 WiFiServer server(80);    // Server will be at port 80
 // defines pins numbers
 const int stepPin = 26; 
@@ -12,7 +12,11 @@ int currentState  = 0; //0 - yellow, 1 - green, 2 - blue
 
 void setup()
 {
+  
   Serial.begin (115200);
+
+  pinMode(stepPin,OUTPUT); 
+  pinMode(dirPin,OUTPUT);
 
   Serial.print ("Connecting to ");
   Serial.print (wifi_name);
@@ -65,12 +69,30 @@ void loop()
         }
         else
           if (c == '\r') {
-          if(buffer.indexOf("GET /?yellow")>=0)
-            handleRequest(0);
-          if(buffer.indexOf("GET /?green")>=0)
-            handleRequest(1);
-          if(buffer.indexOf("GET /?blue")>=0)
-            handleRequest(2);         
+          if(buffer.indexOf("GET /?yellow")>=0){
+            Serial.print ("yellow");
+            if(currentState != 0) {
+              Serial.println("In handleRequest %d");
+              Serial.println(currentState);
+              handleRequest(0);
+            }
+          }
+          if(buffer.indexOf("GET /?green")>=0){
+            Serial.print ("green");
+            if(currentState != 1) {
+              Serial.println("In handleRequest %d");
+              Serial.println(currentState);
+              handleRequest(1);
+            }
+          }
+          if(buffer.indexOf("GET /?blue")>=0) {
+            Serial.print ("blue");
+            if(currentState != 2){
+              Serial.println("In handleRequest %d");
+              Serial.println(currentState);
+              handleRequest(2);         
+            }
+          }
         }
         else {
           currentLineIsBlank = false;
@@ -82,13 +104,20 @@ void loop()
 }
 
 void handleRequest(int nextState){
+  
+  Serial.println(currentState);
+  Serial.print(" state");
+  Serial.println("");
   if(currentState == 0) {
     if (nextState == 1) {
       move_120_forward();
     }
     else if (nextState == 2) {
-      move_120_forward();
-      move_120_forward();
+      move_120_backward();
+    }
+    else if (nextState == 0) {
+      Serial.print ("Otvori kosha neshtastnik");
+
     }
   } else if (currentState == 1) {
     if (nextState == 0) {
@@ -97,14 +126,21 @@ void handleRequest(int nextState){
     else if (nextState == 2) {
       move_120_forward();
     }
+    else if(nextState == 1){
+      Serial.print ("Otvori kosha neshtastnik");
+    }
   } else if (currentState == 2) {
     if (nextState == 0) {
       move_120_forward();
     }
     else if (nextState == 1) {
-      move_120_backward();    }
+      move_120_backward();    
+    }
+    else if (nextState == 2){
+      Serial.print ("Otvori kosha neshtastnik");
+    }
   }  
-  
+  delay(5200);
   //change the current state
   currentState = nextState;
   
