@@ -1,28 +1,20 @@
 from ml.predict import SmartBinPredictor
 import os
+import cv2
 
 
 def main():
     predictor = SmartBinPredictor('models/model1.pt')
     path = '/home/traceur/Insync/shared/Hack4future/data/test/'
-    results = []
     for root, dirs, files in os.walk(path):
         for file in files:
             if not file.endswith('.jpg'):
                 continue
 
             image = os.path.join(root, file)
-            prediction = predictor.predict(image)
-            result = root.split('/')[-1] == predictor.class_names[prediction]
-            results.append(result)
-
-            if not result:
-                print(image)
-
-    positives = results.count(True)
-    negatives = results.count(False)
-
-    print(positives / len(results))
+            prediction = predictor.predict(cv2.imread(image))
+            print(root)
+            print(prediction)
 
 
 if __name__ == '__main__':

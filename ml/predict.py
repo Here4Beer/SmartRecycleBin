@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from torchvision import transforms
 from PIL import Image
+import cv2
 
 
 class SmartBinPredictor:
@@ -16,8 +17,9 @@ class SmartBinPredictor:
         ])
         self.class_names = [None, '3800048307881', '9008700147392', '80176800', '5449000131843']
 
-    def predict(self, image_path: str):
-        image = Image.open(image_path)
+    def predict(self, cv2_image):
+        image = cv2.cvtColor(cv2_image, cv2.COLOR_BGR2RGB)
+        image = Image.fromarray(image)
         inputs = self.data_transforms(image)
         inputs = inputs.to(self.device)
 
