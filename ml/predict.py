@@ -14,7 +14,7 @@ class SmartBinPredictor:
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
-        self.class_names = ['qgodka', '3800048307881', '9008700147392', '80176800', '5449000131843']
+        self.class_names = [None, '3800048307881', '9008700147392', '80176800', '5449000131843']
 
     def predict(self, image_path: str):
         image = Image.open(image_path)
