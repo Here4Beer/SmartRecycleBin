@@ -21,5 +21,6 @@ class SmartBinPredictor:
         inputs = self.data_transforms(image)
         inputs = inputs.to(self.device)
 
-        return np.argmax(self.model(inputs[None, ...]).cpu().detach().numpy())
+        class_index = np.argmax(self.model(inputs[None, ...]).cpu().detach().numpy())
+        return self.class_names[class_index]
 
