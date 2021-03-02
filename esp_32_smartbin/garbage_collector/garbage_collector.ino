@@ -1,14 +1,24 @@
 #include <WiFi.h>
+#include <Servo_ESP32.h>
+
 
 //Testing example for esp32
-
+static const int servoPin = 33; //printed G14 on the board
 const char* wifi_name = "A1_A1C2CA"; // Your Wifi network name here
 const char* wifi_pass = "72041880";    // Your Wifi network password here
 WiFiServer server(80);    // Server will be at port 80
 // defines pins numbers
 const int stepPin = 26; 
 const int dirPin = 25; 
-int currentState  = 0; //0 - yellow, 1 - green, 2 - blue
+int currentState  = 1; //0 - yellow, 1 - green, 2 - blue
+
+Servo_ESP32 servo1;
+
+int angle =0;
+int angleStep = 3;
+
+int angleMin =0;
+int angleMax = 90;
 
 void setup()
 {
@@ -17,6 +27,8 @@ void setup()
 
   pinMode(stepPin,OUTPUT); 
   pinMode(dirPin,OUTPUT);
+  servo1.attach(servoPin);
+
 
   Serial.print ("Connecting to ");
   Serial.print (wifi_name);
@@ -76,6 +88,11 @@ void loop()
               Serial.println(currentState);
               handleRequest(0);
             }
+            servo_open();
+            delay(5000);
+            servo_close();
+            delay(300);
+
           }
           if(buffer.indexOf("GET /?green")>=0){
             Serial.print ("green");
@@ -84,6 +101,10 @@ void loop()
               Serial.println(currentState);
               handleRequest(1);
             }
+            servo_open();
+            delay(5000);
+            servo_close();
+            delay(300);
           }
           if(buffer.indexOf("GET /?blue")>=0) {
             Serial.print ("blue");
@@ -92,6 +113,12 @@ void loop()
               Serial.println(currentState);
               handleRequest(2);         
             }
+            servo_open();
+            delay(5000);
+            servo_close();
+            delay(300);
+
+            
           }
         }
         else {
@@ -117,7 +144,6 @@ void handleRequest(int nextState){
     }
     else if (nextState == 0) {
       Serial.print ("Otvori kosha neshtastnik");
-
     }
   } else if (currentState == 1) {
     if (nextState == 0) {
@@ -134,13 +160,12 @@ void handleRequest(int nextState){
       move_120_forward();
     }
     else if (nextState == 1) {
-      move_120_backward();    
+      move_120_backward();   
     }
     else if (nextState == 2){
       Serial.print ("Otvori kosha neshtastnik");
     }
   }  
-  delay(5200);
   //change the current state
   currentState = nextState;
   
@@ -192,4 +217,17 @@ void move_120_backward(){
     delayMicroseconds(6000); 
   }
   delay(1000); // One second delay
+}
+void servo_open(){
+  for(int angle = 0; angle <= angleMax; angle +=angleStep) {
+        servo1.write(angle);
+        delay(100);
+    }
+}
+void servo_close(){
+  
+    for(int angle = 70; angle >= angleMin; angle -=angleStep) {
+        servo1.write(angle);
+        delay(100);
+    }
 }
