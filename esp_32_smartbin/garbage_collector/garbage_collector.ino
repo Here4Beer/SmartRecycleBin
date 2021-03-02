@@ -4,8 +4,8 @@
 
 //Testing example for esp32
 static const int servoPin = 33; //printed G14 on the board
-const char* wifi_name = "A1_A1C2CA"; // Your Wifi network name here
-const char* wifi_pass = "72041880";    // Your Wifi network password here
+const char* wifi_name = "SSID"; // Your Wifi network name here
+const char* wifi_pass = "PASS";    // Your Wifi network password here
 WiFiServer server(80);    // Server will be at port 80
 // defines pins numbers
 const int stepPin = 26; 
